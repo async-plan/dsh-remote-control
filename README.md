@@ -42,6 +42,9 @@ DSH webServer
 
 ```
 dsh-remote-control/
+├── index.js         # 静态 bundle 版宿主插件（注册到 设置→插件，持久化）
+├── cordis.patch.yml # bundle 组合补丁（插入 remote-control 行）
+├── package.json     # bundle 清单（dsh.bundle.patch 声明）
 ├── src/
 │   ├── host.js       # 动态插件的 code.host（Host 半区：路由、网关、隧道）
 │   └── client.js     # 动态插件的 code.client（Client 半区：Run 卡片面板）
@@ -49,7 +52,24 @@ dsh-remote-control/
 └── README.md
 ```
 
-## 快速开始
+## 静态安装（设置 → 插件 页可见、持久化）
+
+仓库根目录的 `index.js` + `cordis.patch.yml` + `package.json` 构成一个 DSH **bundle 包**（`package.json` 声明 `dsh.bundle.patch`）。安装后插件会作为网页版组合树里的一行，出现在 **设置 → 插件** 页（可启用/停用、查看运行状态），并随 DSH 重启自动生效——不再是进程内临时插件。
+
+1. 安装到 web profile（本机执行）：
+   ```powershell
+   dsh plugin --profile web add <本仓库路径>   # 例如 D:\...\dsh-remote-control
+   ```
+2. （推荐）固定令牌：设置环境变量 `DSH_REMOTE_TOKEN=<长随机串>`；未设置则每次启动随机生成并打印到宿主日志。
+3. 重启网页版（`dsh web` 或重启 DSH）→ **设置 → 插件** 出现 `remote-control` 行。
+4. 使用入口（令牌来自 `DSH_REMOTE_TOKEN`，否则见宿主日志）：
+   - 局域网完整网页版：`http://<主机IP>:8790/?token=<令牌>`
+   - 公网：控制页 `/remote-control/` 点「启动公网隧道」，得 `https://xxx.trycloudflare.com/?token=<令牌>`
+   - 可选环境变量 `DSH_REMOTE_PORT` 覆盖端口（默认 8790）。
+
+> 说明：静态 bundle 版不含动态 Run 卡片面板（面板是动态插件专用能力）；令牌/入口通过宿主日志与环境变量提供。若需要面板与一站式链接，用下方「快速开始」的动态版（进程内、DSH 重启即失）。
+
+## 快速开始（动态版，会话内试用）
 
 前置条件：电脑上运行着 DSH 网页版（`http://127.0.0.1:3080`），且机器装有 Node.js（用于网关子进程）。
 
