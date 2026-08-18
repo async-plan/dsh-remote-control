@@ -232,15 +232,45 @@ const PAGE_HTML = '<!doctype html>\n'
   + '</html>\n'
 
 const MOBILE_CSS = '<style id="dsh-remote-mobile">\n'
+  // ---- global: no page-level horizontal scroll, keep text size ----
+  + 'html { -webkit-text-size-adjust: 100%; }\n'
+  + 'body { overscroll-behavior: none; }\n'
+  + 'html, body { overflow-x: hidden; }\n'
+  // ---- coarse pointer (touch): no column drag handles ----
   + '@media (pointer: coarse) { [data-side] { display: none !important; } }\n'
+  // ---- phone / tablet, portrait and landscape ----
   + '@media (max-width: 900px) {\n'
+  // column behavior: rail + chat; expanded sidebar and open details become full-screen sheets
   + '  [data-details-collapsed][data-sidebar-collapsed] { grid-template-columns: 56px minmax(0, 1fr) 0px !important; }\n'
   + '  [data-details-collapsed]:not([data-sidebar-collapsed]) { grid-template-columns: minmax(0, 1fr) 0px 0px !important; }\n'
   + '  [data-sidebar-collapsed]:not([data-details-collapsed]) { grid-template-columns: 0px 0px minmax(0, 1fr) !important; }\n'
   + '  :not([data-sidebar-collapsed]):not([data-details-collapsed]) { grid-template-columns: 0px 0px minmax(0, 1fr) !important; }\n'
+  // dynamic viewport height: footer never hides behind browser chrome
+  + '  html, body, #root { height: 100dvh !important; }\n'
+  // sidebar sheet fills the screen (component sets an inline frozen width)
+  + '  [data-slot="sidebar"] { width: 100% !important; }\n'
+  + '  [data-slot="sidebar"] > div { width: 100% !important; max-width: 100% !important; }\n'
+  // conversation header: tighter padding; tabs scroll instead of clipping
+  + '  [data-slot="conversation.session.header"] > div { padding: 8px 10px 0 !important; }\n'
+  + '  [data-slot="conversation.session.header"] [role="tablist"] { gap: 14px; padding-left: 4px; overflow-x: auto; }\n'
+  + '  [data-slot="conversation.session.header"] [role="tab"] { white-space: nowrap; }\n'
+  // chat content: no horizontal bleed; images / code / tables scroll internally
+  + '  [data-slot="conversation.session"] img,\n'
+  + '  [data-slot="conversation.session"] video,\n'
+  + '  [data-slot="conversation.session"] table,\n'
+  + '  [data-slot="conversation.session"] pre,\n'
+  + '  [data-slot="conversation.session"] code { max-width: 100% !important; }\n'
+  + '  [data-slot="conversation.session"] pre { overflow-x: auto; }\n'
+  + '  [data-slot="conversation.session"] table { display: block; overflow-x: auto; }\n'
+  // popups / menus / dialogs never wider than the viewport
+  + '  [role="menu"], [role="dialog"], [role="listbox"] { max-width: calc(100vw - 24px) !important; }\n'
+  // composer seat clears the home indicator
+  + '  [data-composer-seat] { padding-bottom: env(safe-area-inset-bottom); }\n'
   + '}\n'
-  + 'html { -webkit-text-size-adjust: 100%; }\n'
-  + 'body { overscroll-behavior: none; }\n'
+  // ---- narrow portrait: tighter chat / composer side clearance ----
+  + '@media (max-width: 480px) {\n'
+  + '  [data-phase] { --dsh-composer-side-clearance: 8px; }\n'
+  + '}\n'
   + '</style>'
 
 return {
