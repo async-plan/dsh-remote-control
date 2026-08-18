@@ -1,0 +1,23 @@
+{
+  "name": "dsh-remote-control",
+  "version": "0.1.0",
+  "description": "DSH 远程控制（静态 bundle 版）：完整网页版公网/局域网入口——令牌登录门网关 + 移动端适配 + cloudflared 一键隧道。安装后出现在 设置→插件 页，持久化随网页版启动。",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
